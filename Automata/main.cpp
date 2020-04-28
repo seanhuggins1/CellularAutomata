@@ -2,10 +2,9 @@
 #include <stdio.h>
 
 #include "CellularAutomata.h"
+#include <iostream>
+#include <stdlib.h>
 
-//SCREEN dimension constants
-const int SCREEN_WIDTH = 1200;
-const int SCREEN_HEIGHT = 1200;
 
 bool init();
 
@@ -24,6 +23,8 @@ SDL_Surface* gHelloWorld = NULL;
 
 SDL_Renderer* gRenderer = NULL;
 
+int screen_width, screen_height;
+
 
 /**
  * Initializes SDL and creates the window
@@ -31,33 +32,42 @@ SDL_Renderer* gRenderer = NULL;
  * \return true on SDL initialization success, false if initialization failed 
  */
 bool init() {
-	bool success = true;	//success flag
-
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-		success = false;
+		return false;
 	}
 	else {
+		SDL_DisplayMode dm;
+		//get display details
+		if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
+			printf("Error getting desktop display mode: %s\n", SDL_GetError());
+			return false;
+		}
+		screen_width = dm.w;
+		screen_height = dm.h;
+		std::cout << "Screen width: " << screen_width << std::endl;
+		std::cout << "Screen height: " << screen_height << std::endl;
+
 		//create window
 		gWindow = SDL_CreateWindow(
 			"Cellular Automata",
 			SDL_WINDOWPOS_UNDEFINED, //window x position on creation
 			SDL_WINDOWPOS_UNDEFINED, //window y position on creation
-			SCREEN_WIDTH, //window width
-			SCREEN_HEIGHT, //window height
+			screen_width, //window width
+			screen_height, //window height
 			SDL_WINDOW_SHOWN	//window shown upon creation
 		);
 		if (gWindow == NULL)
 		{
 			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-			success = false;
+			return false;
 		}
 		else {
 			//get window surface
 			gScreenSurface = SDL_GetWindowSurface(gWindow);
 		}
 	}
-	return success;
+	return true;
 }
 
 /**
@@ -126,7 +136,7 @@ int main(int argc, char* args[]) {
 	}
 
 	//create a new Cellular Automata
-	CellularAutomata* ca = new CellularAutomata(10,150,50,50,24);
+	CellularAutomata* ca = new CellularAutomata(10,300,screen_width/20,screen_height/20,20);
 
 
 	//main loop flag
@@ -134,7 +144,7 @@ int main(int argc, char* args[]) {
 
 	SDL_Event e;
 	/*GAME LOOP - capped FPS*/
-	const int FPS = 60;	//frames per second
+	const int FPS = 200;	//frames per second
 	const int frameDelay = 1000 / FPS;	//time per frame
 	Uint32 frameStart;	//start of loop iteration
 	Uint32 timeSinceLastUpdate = 0, lastUpdate = 0;
@@ -157,6 +167,9 @@ int main(int argc, char* args[]) {
 				{
 				case SDLK_r:
 					ca->reset();
+					break;
+				case SDLK_ESCAPE:
+					quit = true;
 					break;
 				default:
 					break;

@@ -17,12 +17,14 @@ public:
 
 	void render(SDL_Renderer* renderer);
 
-
+	bool isQueuedForUpdate();
+	void setQueuedForUpdate(bool queued);
 
 private:
 	int state;
 	int age;
 	int nextState;
+	bool queuedForUpdate;
 	int x, y;
 	SDL_Rect rect;
 };

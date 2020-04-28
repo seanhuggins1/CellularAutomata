@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <map>
+#include <queue>
 
 class CellularAutomata
 {
@@ -26,5 +27,7 @@ private:
 	int cellSize;
 
 	std::map<int, CellAgent*> cellMap;
+
+	std::queue<int> cellsToUpdate;
 };
 

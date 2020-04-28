@@ -10,6 +10,7 @@ CellAgent::CellAgent(int initialState, int x, int y, int cellSize)
 	this->rect.y = this->y + 2;
 	this->rect.w = cellSize - 4;
 	this->rect.h = cellSize - 4;
+	this->queuedForUpdate = false;
 
 }
 
@@ -74,4 +75,14 @@ void CellAgent::render(SDL_Renderer* renderer)
 
 	
 	
+}
+
+bool CellAgent::isQueuedForUpdate()
+{
+	return this->queuedForUpdate;
+}
+
+void CellAgent::setQueuedForUpdate(bool queued)
+{
+	this->queuedForUpdate = queued;
 }
