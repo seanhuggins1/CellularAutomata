@@ -14,6 +14,10 @@ struct Point {
 	int y;
 };
 
+struct LineSegment {
+	Point p1, p2;
+};
+
 class CellularAutomata
 {
 public:
@@ -29,12 +33,22 @@ public:
 	void drawBorder();
 
 	void generateRoads();
+	void clearState(int state);
+	void replaceState(int targetState, int replacementState);
+
+	void floodFillStack(int startCell, int targetState, int replacementState);
+	void floodFillQueue(int startCell, int targetState, int replacementState);
+
+	void fastAccrete(int targetState, int replacementState);
+
+	void generatePoints(int targetState, int replacementState, int k );
+	void generateEntryRoad(int state);
 
 	int hashPoint(int x, int y);
 	Point unhashPoint(int p);
 
 	void reset();
-	void smooth();
+	void smooth(int targetState, int replacementState);
 
 private:
 	int iterations;
@@ -45,8 +59,14 @@ private:
 	int area;
 	int cellSize;
 
+	bool isPointInBounds(int x, int y);
+
+	void newRoad(std::vector<int> roadLengths, Point roadPoint, char direction, int roadSpawnRate, int roadDepth);
+
 	std::vector<Point> neighborModel;
 	std::vector<Point> smoothModel;
+
+	std::vector<LineSegment> roads;
 
 	std::map<int, CellAgent*> cellMap;
 

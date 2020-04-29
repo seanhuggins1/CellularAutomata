@@ -6,10 +6,16 @@ CellAgent::CellAgent(int initialState, int x, int y, int cellSize)
 	this->x = x;
 	this->y = y;
 	this->age = 0;
-	this->rect.x = this->x + 2;
+	/*this->rect.x = this->x + 2;
 	this->rect.y = this->y + 2;
 	this->rect.w = cellSize - 4;
-	this->rect.h = cellSize - 4;
+	this->rect.h = cellSize - 4;*/
+
+	this->rect.x = this->x;
+	this->rect.y = this->y;
+	this->rect.w = cellSize;
+	this->rect.h = cellSize;
+
 	this->queuedForUpdate = false;
 
 }
@@ -72,8 +78,8 @@ void CellAgent::render(SDL_Renderer* renderer)
 	if (this->state == 2) {
 		SDL_SetRenderDrawColor(renderer,
 			0x00,
-			0x22,
-			0x55,
+			0x77,
+			0x00,
 			0xFF
 		);
 		SDL_RenderFillRect(renderer, &rect);
@@ -81,9 +87,9 @@ void CellAgent::render(SDL_Renderer* renderer)
 	}
 	if (this->state == 3) {
 		SDL_SetRenderDrawColor(renderer,
-			0x22,
-			0x55,
-			0x77,
+			0xB5,
+			0x65,
+			0x1D,
 			0xFF
 		);
 		SDL_RenderFillRect(renderer, &rect);
@@ -91,9 +97,9 @@ void CellAgent::render(SDL_Renderer* renderer)
 	}
 	if (this->state == 4) {
 		SDL_SetRenderDrawColor(renderer,
-			0x55,
-			0x88,
-			0x99,
+			0x00,
+			0x00,
+			0xff,
 			0xFF
 		);
 		SDL_RenderFillRect(renderer, &rect);
