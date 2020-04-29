@@ -136,7 +136,16 @@ int main(int argc, char* args[]) {
 	}
 
 	//create a new Cellular Automata
-	CellularAutomata* ca = new CellularAutomata(10,800,screen_width/40,screen_height/40,40);
+	CellularAutomata* ca = new CellularAutomata(
+
+		5,						//iterations
+		800,					//initial # of points
+		9,						//minimum neighbors
+		screen_width/20,		//cells wide
+		screen_height/20,		//cells high
+		20
+	
+	);
 
 
 	//main loop flag
@@ -168,6 +177,9 @@ int main(int argc, char* args[]) {
 				case SDLK_r:
 					ca->reset();
 					break;
+				case SDLK_s:
+					ca->smooth();
+					break;
 				case SDLK_ESCAPE:
 					quit = true;
 					break;
@@ -181,7 +193,7 @@ int main(int argc, char* args[]) {
 		}
 
 		timeSinceLastUpdate = SDL_GetTicks() - lastUpdate;	//get the time since the last update
-		ca->update();
+		//ca->update();
 		lastUpdate = SDL_GetTicks();
 
 		//rendering

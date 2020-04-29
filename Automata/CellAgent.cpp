@@ -69,7 +69,66 @@ void CellAgent::render(SDL_Renderer* renderer)
 		SDL_RenderFillRect(renderer, &rect);
 		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
 	}
-
+	if (this->state == 2) {
+		SDL_SetRenderDrawColor(renderer,
+			0x00,
+			0x22,
+			0x55,
+			0xFF
+		);
+		SDL_RenderFillRect(renderer, &rect);
+		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+	}
+	if (this->state == 3) {
+		SDL_SetRenderDrawColor(renderer,
+			0x22,
+			0x55,
+			0x77,
+			0xFF
+		);
+		SDL_RenderFillRect(renderer, &rect);
+		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+	}
+	if (this->state == 4) {
+		SDL_SetRenderDrawColor(renderer,
+			0x55,
+			0x88,
+			0x99,
+			0xFF
+		);
+		SDL_RenderFillRect(renderer, &rect);
+		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+	}
+	if (this->state == 5) {
+		SDL_SetRenderDrawColor(renderer,
+			0x88,
+			0xBB,
+			0xBB,
+			0xFF
+		);
+		SDL_RenderFillRect(renderer, &rect);
+		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+	}
+	if (this->state == 7) {
+		SDL_SetRenderDrawColor(renderer,
+			0x00,
+			0xFF,
+			0x00,
+			0xFF
+		);
+		SDL_RenderFillRect(renderer, &rect);
+		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+	}
+	if (this->state == 8) {
+		SDL_SetRenderDrawColor(renderer,
+			0xff,
+			0xff,
+			0x00,
+			0xFF
+		);
+		SDL_RenderFillRect(renderer, &rect);
+		SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+	}
 	//SDL_RenderDrawPoint(renderer, x, y);
 
 

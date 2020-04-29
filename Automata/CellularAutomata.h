@@ -9,7 +9,7 @@
 #include <queue>
 #include <vector>
 
-struct NeighborOffset {
+struct Point {
 	int x;
 	int y;
 };
@@ -17,7 +17,7 @@ struct NeighborOffset {
 class CellularAutomata
 {
 public:
-	CellularAutomata(int iterations, int k, int w, int h, int cellSize);
+	CellularAutomata(int iterations, int k, int N, int w, int h, int cellSize);
 
 	void update();
 
@@ -25,19 +25,32 @@ public:
 
 	int getNeighborState(int index, int xoffset, int yoffset);
 
+	void initBorder();
+	void drawBorder();
+
+	void generateRoads();
+
+	int hashPoint(int x, int y);
+	Point unhashPoint(int p);
+
 	void reset();
+	void smooth();
 
 private:
 	int iterations;
 	int maxIterations;
 	int k;
+	int N;
 	int w, h;
 	int area;
 	int cellSize;
 
-	std::vector<NeighborOffset> neighborModel;
+	std::vector<Point> neighborModel;
+	std::vector<Point> smoothModel;
 
 	std::map<int, CellAgent*> cellMap;
+
+	std::vector<int> mapBorder;
 
 	std::queue<int> cellsToUpdate;
 };
