@@ -136,7 +136,7 @@ int main(int argc, char* args[]) {
 	}
 
 	//create a new Cellular Automata
-	CellularAutomata* ca = new CellularAutomata(10,300,screen_width/20,screen_height/20,20);
+	CellularAutomata* ca = new CellularAutomata(10,800,screen_width/40,screen_height/40,40);
 
 
 	//main loop flag
@@ -144,7 +144,7 @@ int main(int argc, char* args[]) {
 
 	SDL_Event e;
 	/*GAME LOOP - capped FPS*/
-	const int FPS = 200;	//frames per second
+	const int FPS = 1000;	//frames per second
 	const int frameDelay = 1000 / FPS;	//time per frame
 	Uint32 frameStart;	//start of loop iteration
 	Uint32 timeSinceLastUpdate = 0, lastUpdate = 0;

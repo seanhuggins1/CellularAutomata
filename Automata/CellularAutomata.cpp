@@ -5,10 +5,12 @@
 
 #include <queue>
 #include <stdlib.h>
+#include <vector>
 
-CellularAutomata::CellularAutomata(int iterations, int k, int w, int h, int cellSize)
+CellularAutomata::CellularAutomata(int maxIterations, int k, int w, int h, int cellSize)
 {
-	this->iterations = iterations;
+	this->iterations = 0;
+	this->maxIterations = maxIterations;
 	this->k = k;
 	this->w = w;
 	this->h = h;
@@ -27,10 +29,39 @@ CellularAutomata::CellularAutomata(int iterations, int k, int w, int h, int cell
 		this->cellMap[rand() % this->area]->setState(1);
 	}
 
+	//this->neighborModel.push_back(NeighborOffset({ -2,-2 }));
+	this->neighborModel.push_back(NeighborOffset({ -2,-1 }));
+	this->neighborModel.push_back(NeighborOffset({ -2, 0 }));
+	this->neighborModel.push_back(NeighborOffset({ -2, 1 }));
+	//this->neighborModel.push_back(NeighborOffset({ -2, 2 }));
+
+	this->neighborModel.push_back(NeighborOffset({ -1,-2 }));
+	this->neighborModel.push_back(NeighborOffset({-1,-1}));
+	this->neighborModel.push_back(NeighborOffset({-1, 0}));
+	this->neighborModel.push_back(NeighborOffset({-1, 1}));
+	this->neighborModel.push_back(NeighborOffset({ -1,2 }));
+
+	this->neighborModel.push_back(NeighborOffset({ 0,-2 }));
+	this->neighborModel.push_back(NeighborOffset({ 0,-1}));
+	this->neighborModel.push_back(NeighborOffset({ 0, 1}));
+	this->neighborModel.push_back(NeighborOffset({ 0, 2 }));
+
+	this->neighborModel.push_back(NeighborOffset({ 1,-2 }));
+	this->neighborModel.push_back(NeighborOffset({ 1,-1}));
+	this->neighborModel.push_back(NeighborOffset({ 1, 0}));
+	this->neighborModel.push_back(NeighborOffset({ 1, 1}));
+	this->neighborModel.push_back(NeighborOffset({ 1, 2 }));
+
+	//this->neighborModel.push_back(NeighborOffset({ 2,-2 }));
+	this->neighborModel.push_back(NeighborOffset({ 2,-1 }));
+	this->neighborModel.push_back(NeighborOffset({ 2, 0 }));
+	this->neighborModel.push_back(NeighborOffset({ 2, 1 }));
+	//this->neighborModel.push_back(NeighborOffset({ 2, 2 }));
 }
 
 void CellularAutomata::reset()
 {
+	this->iterations = 0;
 	for (int i = 0; i < area; i++) {
 		this->cellMap[i]->setState(0);
 		this->cellMap[i]->setAge(0);
@@ -43,105 +74,85 @@ void CellularAutomata::reset()
 	}
 }
 
+struct NeighborPoint {
+	int xoffset;
+	int yoffset;
+};
 
 void CellularAutomata::update()
 {
+	if (this->iterations < this->maxIterations) {
+		std::queue<int> cellsFlipped;
 
-	std::queue<int> cellsFlipped;
+		int numberOfCellsToUpdate = this->cellsToUpdate.size();
 
-	int numberOfCellsToUpdate = this->cellsToUpdate.size();
+		//std::cout << numberOfCellsToUpdate << std::endl;
+		for (int i = 0; i < numberOfCellsToUpdate; i++) {
+			//this->cellMap[i]->update();	//update the cell
 
-	//std::cout << numberOfCellsToUpdate << std::endl;
-	for (int i = 0; i < numberOfCellsToUpdate; i++) {
-		//this->cellMap[i]->update();	//update the cell
+			int indexToUpdate = this->cellsToUpdate.front();
 
-		int indexToUpdate = this->cellsToUpdate.front();
+			int cellState = this->cellMap[indexToUpdate]->getState();
 
-		int cellState = this->cellMap[indexToUpdate]->getState();
+			if (cellState == 0) {
+				int flippedNeighbors = 0;
 
-		if (cellState == 0) {
-			int flippedNeighbors = 0;
+				std::queue<int> neighborsToUpdateNext;
 
-			std::queue<int> neighborsToUpdateNext;
-
-			//TODO general formula for neighbors
-			int leftNeighbor = indexToUpdate - 1;
-			if (indexToUpdate % w != 0) {
-				if (this->cellMap[leftNeighbor]->getState() == 1) { 
-					flippedNeighbors++; 
-				}
-				else {
-					neighborsToUpdateNext.push(leftNeighbor);
-				}
-			}
-
-			int rightNeighbor = indexToUpdate + 1;
-			if (rightNeighbor % w != 0) {
-				if (this->cellMap[rightNeighbor]->getState() == 1) { 
-					flippedNeighbors++; 
-				}
-				else {
-					neighborsToUpdateNext.push(rightNeighbor);
-				}
-			}
-
-			int upNeighbor = indexToUpdate - w;
-			if (upNeighbor >= 0) {
-				if (this->cellMap[upNeighbor]->getState() == 1) { 
-					flippedNeighbors++; 
-				}
-				else {
-					neighborsToUpdateNext.push(upNeighbor);
-				}
-			}
-
-			int downNeighbor = indexToUpdate + w;
-			if (downNeighbor < area) {
-				if (this->cellMap[downNeighbor]->getState() == 1) { 
-					flippedNeighbors++; 
-				}
-				else {
-					neighborsToUpdateNext.push(downNeighbor);
-				}
-			}
-
-			//the unflipped neighbors of a cell that should be flipped, that are cells that should be checked NEXT!
-
-
-			//check if the number of flipped neighbors is >= 2;
-			if (flippedNeighbors >= 2) {
-				this->cellMap[indexToUpdate]->setNextState(1);
-
-				//if this cell has been flipped, its unflipped neighbors must be queued for the next update
-				//std::cout << neighborsToUpdateNext.size() << std::endl;
-				while(!neighborsToUpdateNext.empty()) {
-					if (!this->cellMap[neighborsToUpdateNext.front()]->isQueuedForUpdate()) {
-						this->cellsToUpdate.push(neighborsToUpdateNext.front());	//push the unflipped neighbor IF it hasn't already been pushed 
-						this->cellMap[neighborsToUpdateNext.front()]->setQueuedForUpdate(true);
+				NeighborOffset offset;
+				for (int i = 0; i < this->neighborModel.size(); i++)
+				{
+					offset = this->neighborModel.at(i);
+					int neighborState = this->getNeighborState(indexToUpdate, offset.x, offset.y);
+					if (neighborState >= 0) {
+						if (neighborState == 1) {
+							flippedNeighbors++;
+						}
+						else {
+							neighborsToUpdateNext.push(indexToUpdate + offset.x + w * offset.y);
+						}
 					}
-					neighborsToUpdateNext.pop();
 				}
-				cellsFlipped.push(indexToUpdate);
-			}		
+
+
+
+
+				//check if the number of flipped neighbors is >= 2;
+				if (flippedNeighbors >= 8) {
+					this->cellMap[indexToUpdate]->setNextState(1);
+
+					//if this cell has been flipped, its unflipped neighbors must be queued for the next update
+					//std::cout << neighborsToUpdateNext.size() << std::endl;
+					while (!neighborsToUpdateNext.empty()) {
+						if (!this->cellMap[neighborsToUpdateNext.front()]->isQueuedForUpdate()) {
+							this->cellsToUpdate.push(neighborsToUpdateNext.front());	//push the unflipped neighbor IF it hasn't already been pushed 
+							this->cellMap[neighborsToUpdateNext.front()]->setQueuedForUpdate(true);
+						}
+						neighborsToUpdateNext.pop();
+					}
+					cellsFlipped.push(indexToUpdate);
+				}
+			}
+
+			this->cellsToUpdate.pop();
 		}
 
-		this->cellsToUpdate.pop();
+		for (int i = 0; i < this->cellsToUpdate.size(); i++) {
+			this->cellMap[this->cellsToUpdate.front()]->setQueuedForUpdate(false);
+			this->cellsToUpdate.push(this->cellsToUpdate.front());
+			this->cellsToUpdate.pop();
+		}
+
+		while (!cellsFlipped.empty()) {
+			this->cellMap[cellsFlipped.front()]->setState(
+				this->cellMap[cellsFlipped.front()]->getNextState()
+			);
+
+			cellsFlipped.pop();
+		}
 	}
 
-	for (int i = 0; i < this->cellsToUpdate.size(); i++) {
-		this->cellMap[this->cellsToUpdate.front()]->setQueuedForUpdate(false);
-		this->cellsToUpdate.push(this->cellsToUpdate.front());
-		this->cellsToUpdate.pop();
-	}
-
-	while (!cellsFlipped.empty()) {
-		this->cellMap[cellsFlipped.front()]->setState(
-			this->cellMap[cellsFlipped.front()]->getNextState()
-		);
-		
-		cellsFlipped.pop();
-	}
-
+	this->iterations++;
 
 }
 
@@ -152,5 +163,19 @@ void CellularAutomata::render(SDL_Renderer* renderer)
 	}
 
 }
+
+int CellularAutomata::getNeighborState(int index, int xoffset, int yoffset)
+{
+	if (((index % w) + xoffset < w) &&
+		((index % w) + xoffset >= 0) &&
+		(index + w*yoffset >= 0) &&
+		(index + w*yoffset < area) 
+		)
+	{
+		return this->cellMap[index + xoffset + w*yoffset]->getState();
+	}
+	return -1;
+}
+
 
 
